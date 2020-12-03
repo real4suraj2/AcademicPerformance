@@ -1,0 +1,52 @@
+body {
+    background-color: lightblue;
+    text-align: center;
+    vertical-align: center;
+    font-weight: bold;
+}
+
+h1{
+    letter-spacing: 1px;
+}
+
+.container2{
+    margin-top: 10%;
+}
+
+button{
+   font-family: Verdana, Geneva, Tahoma, sans-serif;
+   
+}
+
+ul{
+    list-style-type: none;
+    text-align: left;
+    text-transform: capitalize;
+    color: purple;
+    font-size: 150%;
+}
+
+img{
+    resize: auto;
+}
+
+h2{
+    font-size: 400%;
+    font-style: italic;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+#bargraph{
+    margin: 100px 50px 100px 50px;
+    background-color: pink;
+    padding: 20px 20px 20px 20px;
+    border-radius: 5%;
+    text-align: left;
+    text-transform: capitalize;
+    
+}
+
+#teac{
+    text-align: center;
+}
+
