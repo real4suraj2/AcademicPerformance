@@ -20,10 +20,11 @@ button{
 
 ul{
     list-style-type: none;
-    text-align: left;
+    text-align: center;
     text-transform: capitalize;
     color: purple;
     font-size: 150%;
+    margin-top: 10%;
 }
 
 img{
@@ -48,5 +49,15 @@ h2{
 
 #teac{
     text-align: center;
+}
+
+h1{
+    text-transform: capitalize;
+    font-style: italic;
+    font-weight: bold;
+}
+
+#AddT{
+    
 }
 

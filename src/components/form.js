@@ -21,7 +21,26 @@ class Kform extends Component {
                 </FormGroup>
                 <FormGroup>
                     <Label for="examplePassword">Title</Label>
-                    <Input type="text" name="texy" id="text" placeholder="add title" />
+                    <div className="row">
+               
+               <div className="col ls-6 md-6 sm-6">
+                   <FormGroup>
+                       
+                       <Input type="text" name="text" id="text" placeholder="Add Name" />
+                   </FormGroup>
+               </div>
+               <div className="col ls-6 md-6 sm-6">
+                   <FormGroup>
+                   <Input type="select" name="select" id="exampleSelect">
+                        <option>Weekly</option>
+                        <option>Mounthly</option>
+                        <option>Yearly</option>
+                       
+                    </Input>
+                   </FormGroup>
+               </div>
+
+           </div>
                 </FormGroup>
                 <FormGroup>
                     <Label for="exampleSelect">Select Subject ID</Label>
@@ -41,13 +60,13 @@ class Kform extends Component {
                     <div className="col ls-6 md-6 sm-6">
                         <FormGroup>
                             
-                            <Input type="text" name="texy" id="text" placeholder="Marks obtained" />
+                            <Input type="text" name="text" id="text" placeholder="Marks obtained" />
                         </FormGroup>
                     </div>
                     <div className="col ls-6 md-6 sm-6">
                         <FormGroup>
                             
-                            <Input type="text" name="texy" id="text" placeholder="Max Marks" />
+                            <Input type="text" name="text" id="text" placeholder="Max Marks" />
                         </FormGroup>
                     </div>
 

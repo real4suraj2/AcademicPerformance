@@ -9,7 +9,8 @@ const Example = (props) => {
   return (
     <Dropdown isOpen={dropdownOpen} toggle={toggle} >
       <DropdownToggle caret>
-        Evaluation Criteria 
+        Evaluation
+        <br/> Criteria 
         </DropdownToggle>
       <DropdownMenu>
         <DropdownItem >Yearly</DropdownItem>
