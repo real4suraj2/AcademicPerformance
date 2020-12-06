@@ -9,13 +9,12 @@ const Example = (props) => {
   return (
     <Dropdown isOpen={dropdownOpen} toggle={toggle} >
       <DropdownToggle caret>
-        Evaluation
-        <br/> Criteria 
+         {props.name} 
         </DropdownToggle>
       <DropdownMenu>
+        <DropdownItem >Weekly</DropdownItem>
+        <DropdownItem>Monthly</DropdownItem>
         <DropdownItem >Yearly</DropdownItem>
-        <DropdownItem>Mounthly</DropdownItem>
-        
       </DropdownMenu>
     </Dropdown>
   );

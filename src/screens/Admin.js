@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { Navbar, NavbarBrand, Button } from 'reactstrap';
 import './screen.css';
-import { browserHistory } from 'react-router';
-import AddT from './Admin_components/AddTeacher';
-import AddS from './Admin_components/AddStudent';
+import AddT from './Admin_components/AssignSubject';
+import AddS from './Admin_components/AddUser';
 import AddSub from './Admin_components/AddSubject';
 
 
@@ -15,28 +14,32 @@ class Admin extends Component {
 
         }
     }
-
     render() {
         return (
             <div>
-            <div className="App">
-                <Navbar dark color="primary">
-                    <div className="container">
-                        <NavbarBrand href="/">
-                            <h1>Admin only</h1>
-                        </NavbarBrand>
-                    </div>
-                </Navbar>
-            </div>
-            <div className="row">
-                <div className="col sm-12 md-4 ls-4"> <AddT/> </div>
-                <div className="col sm-12 md-4 ls-4"> <AddS/> </div>
-                <div className="col sm-12 md-4 ls-4"> <AddSub/> </div>
-
+                <div className="App">
+                    <Navbar dark color="primary">
+                        <div className="container">
+                            <NavbarBrand>
+                                <h1>Admin Dashboard</h1>
+                            </NavbarBrand>
+                        </div>
+                    </Navbar>
                 </div>
-                <hr></hr><br></br>
-                <Button size="lg" color="success" >Back to main screen</Button>
-
+                <div className="container">
+                    <div className="row">
+                        <div className="col sm-12">
+                            <div className="row">
+                                <div className="col sm-12 md-12 ls-12"> <AddT /> </div>
+                            </div>
+                            <div className="row">
+                                <div className="col sm-12 md-12 ls-12"> <AddSub /> </div>
+                            </div>
+                        </div>
+                        <div className="col sm-12"> <AddS /> </div>
+                    </div>
+                    <hr></hr><br></br>
+                </div>
             </div>
         )
     }

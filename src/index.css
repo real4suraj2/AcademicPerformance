@@ -11,3 +11,24 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#root {
+  height: 80vh;
+  width: 100%;
+}
+
+.logo {
+  background: url('./student.png');
+  height: 150px;
+  width: 150px;
+  background-size: cover;
+  margin: auto;
+}
+
+.logo-teacher {
+  background: url('./teacher.png');
+  height: 150px;
+  width: 150px;
+  background-size: cover;
+  margin: auto;
+}

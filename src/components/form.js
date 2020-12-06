@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Alert, Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import { Alert, Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 
 class Kform extends Component {
 
@@ -14,7 +14,7 @@ class Kform extends Component {
 
     render() {
         return (
-            <Form>
+            <div>
                 <FormGroup>
                     <Label for="exampleEmail">Student ID</Label>
                     <Input type="email" name="email" id="exampleEmail" placeholder="ex : 0103cs181170" />
@@ -22,25 +22,24 @@ class Kform extends Component {
                 <FormGroup>
                     <Label for="examplePassword">Title</Label>
                     <div className="row">
-               
-               <div className="col ls-6 md-6 sm-6">
-                   <FormGroup>
-                       
-                       <Input type="text" name="text" id="text" placeholder="Add Name" />
-                   </FormGroup>
-               </div>
-               <div className="col ls-6 md-6 sm-6">
-                   <FormGroup>
-                   <Input type="select" name="select" id="exampleSelect">
-                        <option>Weekly</option>
-                        <option>Mounthly</option>
-                        <option>Yearly</option>
-                       
-                    </Input>
-                   </FormGroup>
-               </div>
 
-           </div>
+                        <div className="col ls-6 md-6 sm-6">
+                            <FormGroup>
+
+                                <Input type="text" name="text" id="text" placeholder="Add Name" />
+                            </FormGroup>
+                        </div>
+                        <div className="col ls-6 md-6 sm-6">
+                            <FormGroup>
+                                <Input type="select" name="select" id="exampleSelect">
+                                    <option>Weekly</option>
+                                    <option>Mounthly</option>
+                                    <option>Yearly</option>
+                                </Input>
+                            </FormGroup>
+                        </div>
+
+                    </div>
                 </FormGroup>
                 <FormGroup>
                     <Label for="exampleSelect">Select Subject ID</Label>
@@ -52,20 +51,18 @@ class Kform extends Component {
                         <option>sub-5</option>
                     </Input>
                 </FormGroup>
-                
-               <Label for="examplePassword">Marks Details</Label>
-                <br/>
+
+                <Label for="examplePassword">Marks Details</Label>
+                <br />
                 <div className="row">
-               
+
                     <div className="col ls-6 md-6 sm-6">
                         <FormGroup>
-                            
                             <Input type="text" name="text" id="text" placeholder="Marks obtained" />
                         </FormGroup>
                     </div>
                     <div className="col ls-6 md-6 sm-6">
                         <FormGroup>
-                            
                             <Input type="text" name="text" id="text" placeholder="Max Marks" />
                         </FormGroup>
                     </div>
@@ -75,22 +72,9 @@ class Kform extends Component {
                     <Label for="exampleText">Remarks And Comments</Label>
                     <Input type="textarea" name="text" id="exampleText" />
                 </FormGroup>
-                <hr/>
-                
-                
-                <FormGroup check>
-                    <br />
-                    <Label check>
-                        <Input type="checkbox" required />{' '}
-                  i agree that all info is done by teacher {this.state.teachername}
-                    </Label>
-                </FormGroup><br />
-                <Button>Add Record To Database</Button><br/><br/>
-                <p>use this alert after runtime success</p>
-                <Alert color="success" >
-        Record is added successfully!!
-      </Alert>
-            </Form>
+                <hr />
+                <Button color="success">Add Record To Database</Button><br /><br />
+            </div>
         );
     }
 }

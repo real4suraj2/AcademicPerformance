@@ -22,8 +22,6 @@ ul{
     list-style-type: none;
     text-align: center;
     text-transform: capitalize;
-    color: purple;
-    font-size: 150%;
     margin-top: 10%;
 }
 
@@ -38,7 +36,7 @@ h2{
 }
 
 #bargraph{
-    margin: 100px 50px 100px 50px;
+    margin: 50px 50px 100px 50px;
     background-color: pink;
     padding: 20px 20px 20px 20px;
     border-radius: 5%;
@@ -57,7 +55,8 @@ h1{
     font-weight: bold;
 }
 
-#AddT{
-    
+.center{
+    justify-content: center;
+    align-items: center;
 }
 
