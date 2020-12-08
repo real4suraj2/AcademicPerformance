@@ -4,16 +4,25 @@ import axios from 'axios';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
+import MenuIcon from '@material-ui/icons/Menu';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import SettingsPower from '@material-ui/icons/SettingsPower';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import AssignmentIcon from '@material-ui/icons/Assignment';
 import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -21,6 +30,15 @@ import FormControl from '@material-ui/core/FormControl';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import HomeIcon from '@material-ui/icons/Home';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import SubjectIcon from '@material-ui/icons/Subject';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Title from './Title';
 
 function Copyright() {
     return (
@@ -35,6 +53,7 @@ function Copyright() {
     );
 }
 
+const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
@@ -55,6 +74,20 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
+    },
+    appBarShift: {
+        marginLeft: drawerWidth,
+        width: `calc(100% - ${drawerWidth}px)`,
+        transition: theme.transitions.create(['width', 'margin'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    },
+    menuButton: {
+        marginRight: 36,
+    },
+    menuButtonHidden: {
+        display: 'none',
     },
     title: {
         flexGrow: 1,
@@ -92,6 +125,26 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(1),
         minWidth: 120,
     },
+    drawerPaper: {
+        position: 'relative',
+        whiteSpace: 'nowrap',
+        width: drawerWidth,
+        transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    },
+    drawerPaperClose: {
+        overflowX: 'hidden',
+        transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        width: theme.spacing(12),
+        [theme.breakpoints.up('sm')]: {
+            width: theme.spacing(9),
+        },
+    },
 }));
 
 export default function Dashboard() {
@@ -111,7 +164,45 @@ export default function Dashboard() {
     const [dob, setDob] = useState('');
     const [year, setYear] = useState('');
     const [open, setOpen] = useState(true);
+    const [drawer, setDrawer] = useState(true);
     const [message, setMessage] = useState('Logged In Successfully as admin');
+    const [selected, setSelected] = useState(0);
+    const [tab, setTab] = useState('create');
+    const [teachers, setTeachers] = useState([]);
+    const [subjects, setSubjects] = useState([]);
+    const [assigned, setAssigned] = useState([]);
+
+    const handleDrawerOpen = () => {
+        setDrawer(true);
+    };
+    const handleDrawerClose = () => {
+        setDrawer(false);
+    };
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        axios.get('http://localhost:8080/api/users/info/teachers', {
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json',
+            }
+        }).then(response => {
+            console.log(response);
+            setTeachers(response.data.payload);
+        })
+            .catch(err => console.log(err));
+
+        axios.get('http://localhost:8080/api/subjects/info', {
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json',
+            }
+        }).then(response => {
+            console.log(response);
+            setSubjects(response.data.payload);
+        })
+            .catch(err => console.log(err));
+    }, []);
     const handleSubjectCreate = event => {
         event.preventDefault();
         const token = localStorage.getItem('token');
@@ -153,6 +244,32 @@ export default function Dashboard() {
             .catch(err => {
                 console.log(err);
                 setMessage('Please check form details');
+                setOpen(true);
+            })
+    }
+
+    const handleShowAssigned = teacherId => {
+        const token = localStorage.getItem('token');
+        axios.post('http://localhost:8080/api/users/info/teacher-subject', JSON.stringify({
+            teacherId: teacherId.toString()
+        }), {
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => {
+                console.log(response);
+                setAssigned(response.data.payload)
+                setMessage('Assigned Subjects List Fetched!');
+                if(response.data.payload.length == 0) {
+                    setMessage('No subjects assigned to the requested teacher');
+                }
+                setOpen(true);
+            })
+            .catch(function (error) {
+                console.log(error);
+                setMessage('Error Occurred');
                 setOpen(true);
             })
     }
@@ -203,20 +320,63 @@ export default function Dashboard() {
                     </React.Fragment>
                 }
             />
-            <AppBar position="absolute" className={clsx(classes.appBar)}>
+            <AppBar position="absolute" className={clsx(classes.appBar, drawer && classes.appBarShift)}>
                 <Toolbar className={classes.toolbar}>
+                    <IconButton
+                        edge="start"
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={handleDrawerOpen}
+                        className={clsx(classes.menuButton, drawer && classes.menuButtonHidden)}
+                    >
+                        <MenuIcon />
+                    </IconButton>
                     <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                        Admin Dashboard
+                        Student Dashboard
           </Typography>
                     <IconButton color="inherit" onClick={() => history.push('/')} >
                         <SettingsPower />
                     </IconButton>
                 </Toolbar>
             </AppBar>
+            <Drawer
+                variant="permanent"
+                classes={{
+                    paper: clsx(classes.drawerPaper, !drawer && classes.drawerPaperClose),
+                }}
+                open={drawer}
+            >
+                <div className={classes.toolbarIcon}>
+                    <IconButton onClick={handleDrawerClose}>
+                        <ChevronLeftIcon />
+                    </IconButton>
+                </div>
+                <Divider />
+                <List>
+                    <ListItem button onClick={() => { setSelected(0); setTab('create'); }} selected={selected == 0}>
+                        <ListItemIcon>
+                            <HomeIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Creation Panel" />
+                    </ListItem>
+                    <ListItem button onClick={() => { setSelected(1); setTab('teachers'); }} selected={selected == 1}>
+                        <ListItemIcon>
+                            <AccountCircleIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Available Teachers" />
+                    </ListItem>
+                    <ListItem button onClick={() => { setSelected(2); setTab('subjects'); }} selected={selected == 2}>
+                        <ListItemIcon>
+                            <SubjectIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Available Subjects" />
+                    </ListItem>
+                </List>
+            </Drawer>
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>
-                    <Grid container spacing={3}>
+                    {tab == 'create' && <Grid container spacing={3}>
                         <Grid item xs={6}>
                             <Paper className={fixedHeightPaper1}>
                                 <form className={classes.form} noValidate onSubmit={event => handleSubjectCreate(event)}>
@@ -300,10 +460,10 @@ export default function Dashboard() {
                                 </form>
                             </Paper>
                         </Grid>
-                    </Grid>
-                    <Grid container spacing={3}>
+                    </Grid>}
+                    {tab == 'create' && <Grid container spacing={3}>
                         <Grid item xs={12}>
-                            <Paper className={fixedHeightPaper}>
+                            <Paper className={classes.paper}>
                                 <form className={classes.form} noValidate onSubmit={event => handleUserCreate(event)}>
                                     <Grid container spacing={3} justify="center" alignItems="center">
                                         <Grid item xs={6}>
@@ -438,7 +598,99 @@ export default function Dashboard() {
                                 </form>
                             </Paper>
                         </Grid>
+                    </Grid>}
+                    {tab == 'teachers' && <Grid container spacing={3} justify="center" alignItems="center">
+                        <Grid item xs={8}>
+                            <Paper className={fixedHeightPaper}>
+                                <Title>Teachers</Title>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>User Id</TableCell>
+                                            <TableCell>Teacher Id</TableCell>
+                                            <TableCell>Name</TableCell>
+                                            <TableCell>Assigned Subjects</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {teachers.map((teacher, idx) => {
+                                            return (
+                                                <TableRow key={idx}>
+                                                    <TableCell>{teacher.userId}</TableCell>
+                                                    <TableCell>{teacher.teacherId}</TableCell>
+                                                    <TableCell>{teacher.name}</TableCell>
+                                                    <TableCell>
+                                                        <Button
+                                                            color="primary"
+                                                            onClick={() => handleShowAssigned(teacher.teacherId)}
+                                                        >
+                                                            View
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
+                                    </TableBody>
+                                </Table>
+                            </Paper>
+                        </Grid>
+                        {
+                            assigned.length != 0 && <Grid item xs={3}>
+                                <Paper>
+                                    <Grid container justify="center" alignItems="center">
+                                        <Grid item>
+                                            <Title>Assigned Subjects</Title>
+                                            <Table size="small">
+                                                <TableHead>
+                                                    <TableRow>
+                                                        <TableCell>Subject Id</TableCell>
+                                                        <TableCell>Name</TableCell>
+                                                    </TableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                    {assigned.map((subjectId, idx) => {
+                                                        return (
+                                                            <TableRow key={idx}>
+                                                                <TableCell>{subjectId}</TableCell>
+                                                                <TableCell>{subjects.find(subject => subject.subjectId == subjectId).name}</TableCell>
+                                                            </TableRow>
+                                                        );
+                                                    })}
+                                                </TableBody>
+                                            </Table>
+                                        </Grid>
+                                    </Grid>
+                                </Paper>
+                            </Grid>
+                        }
                     </Grid>
+                    }
+                    {tab == 'subjects' && <Grid container spacing={3} justify="center">
+                        <Grid item xs={6}>
+                            <Paper className={fixedHeightPaper}>
+                                <Title>Subjects</Title>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Subject Id</TableCell>
+                                            <TableCell>Name</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {subjects.map((subject, idx) => {
+                                            return (
+                                                <TableRow key={idx}>
+                                                    <TableCell>{subject.subjectId}</TableCell>
+                                                    <TableCell>{subject.name}</TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
+                                    </TableBody>
+                                </Table>
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                    }
                     <Box pt={4}>
                         <Copyright />
                     </Box>
@@ -448,117 +700,4 @@ export default function Dashboard() {
     );
 }
 
-
-
-// import React, { Component } from 'react';
-
-// import { Navbar, NavbarBrand, Button } from 'reactstrap';
-// import './screen.css';
-// import AddT from './Admin_components/AssignSubject';
-// import AddS from './Admin_components/AddUser';
-// import AddSub from './Admin_components/AddSubject';
-
-// class Admin extends Component {
-//     constructor(props) {
-//         super(props);
-
-//         this.state = {
-
-//         }
-//     }
-//     render() {
-//         return (
-//             <div>
-//                 <div className="App">
-//                     <Navbar dark color="primary">
-//                         <div className="container">
-//                             <NavbarBrand>
-//                                 <h1>Admin Dashboard</h1>
-//                             </NavbarBrand>
-//                         </div>
-//                     </Navbar>
-//                 </div>
-//                 <div className="container">
-//                     <div className="row">
-//                         <div className="col sm-12">
-//                             <div className="row">
-//                                 <div className="col sm-12 md-12 ls-12"> <AddT /> </div>
-//                             </div>
-//                             <div className="row">
-//                                 <div className="col sm-12 md-12 ls-12"> <AddSub /> </div>
-//                             </div>
-//                         </div>
-//                         <div className="col sm-12"> <AddS /> </div>
-//                     </div>
-//                     <hr></hr><br></br>
-//                 </div>
-//             </div>
-//         )
-//     }
-// }
-
-
-// export default Admin;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// class Login extends Component  {
-
-//     constructor(props){
-//       super(props);
-//       this.state = {
-
-//       }
-//     }
-
-//     NavigatetoStudent(){
-//       browserHistory.push("/")
-//     }
-//     render() {
-//       return (
-//         <div className="App">
-//           <Navbar dark color="primary">
-//             <div className="container">
-//               <NavbarBrand href="/">
-//                 <h1>Signup options</h1>
-//                 </NavbarBrand>
-//             </div>
-//           </Navbar>
-//           <div className="container2">
-//           <Button color="danger" size="lg" >Student Login</Button><br/><br/>
-//           <Button color="danger" size="lg">Teacher Login</Button><br/><br/>
-//           <Button color="danger" size="lg">Admin only</Button><br/><br/>
-//           </div>
-//         </div>
-//       );
-
-//     }
-//   }
-
-//   export default Login;
 

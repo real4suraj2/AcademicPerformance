@@ -22,6 +22,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import Title from './Title';
 
 function Copyright() {
     return (
@@ -111,6 +112,7 @@ export default function Dashboard() {
     const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
     const [open, setOpen] = useState(true);
     const [message, setMessage] = useState('Logged In Successfully as ' + localStorage.getItem('username'));
+    const [showForm, setShowForm] = useState(true);
     const handleCreateReport = (event) => {
         event.preventDefault();
         const token = localStorage.getItem('token');
@@ -186,6 +188,11 @@ export default function Dashboard() {
                         setSubjects(response.data.payload)
                         if (response.data.payload.length > 0)
                             setSubjectId(response.data.payload[0])
+                        else {
+                            setMessage('No Subject Assigned');
+                            setOpen(true);
+                            setShowForm(false);
+                        }
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -230,7 +237,7 @@ export default function Dashboard() {
                     <Grid container spacing={3}>
                         <Grid item xs={12} md={8} lg={9}>
                             <Paper className={fixedHeightPaper}>
-                                <form className={classes.form} noValidate onSubmit={event => handleCreateReport(event)}>
+                                { showForm && <form className={classes.form} noValidate onSubmit={event => handleCreateReport(event)}>
                                     <Grid container spacing={3} justify="center" alignItems="center">
                                         <Grid item xs={4}>
                                             <FormControl variant="filled" className={classes.formControl}>
@@ -373,7 +380,9 @@ export default function Dashboard() {
                                     >
                                         Generate Report
                                     </Button>
-                                </form>
+                                </form>}
+                                {!showForm && 
+                                <Title>No subjects are assigned to you yet!</Title>}
                             </Paper>
                         </Grid>
                         <Grid item xs={12} md={4} lg={3}>
