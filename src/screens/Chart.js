@@ -3,12 +3,11 @@ import { useTheme } from '@material-ui/core/styles';
 import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
 import Title from './Title';
 
-export default (props) => {
+export default function Chart(props) {
   const theme = useTheme();
   const data = props.reports.map((report, idx) => {
     return { time : (idx + 1).toString(), amount: ((report.obtainedMarks / report.maximumMarks) * 100).toString() };
   });
-  console.log(data);
   return (
     <React.Fragment>
       <Title>Performance</Title>

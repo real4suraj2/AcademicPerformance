@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import clsx from 'clsx';
@@ -22,7 +22,6 @@ import SettingsPower from '@material-ui/icons/SettingsPower';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import AssignmentIcon from '@material-ui/icons/Assignment';
 import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -39,6 +38,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Title from './Title';
+import {useStore} from '../App';
 
 function Copyright() {
     return (
@@ -147,12 +147,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function Dashboard() {
+export default function Admin() {
     const classes = useStyles();
     const history = useHistory();
     const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
     const fixedHeightPaper1 = clsx(classes.paper, classes.fixedHeight1);
-
     const [name, setName] = useState('');
     const [subjectId, setSubjectId] = useState('');
     const [teacherId, setTeacherId] = useState('');
@@ -172,6 +171,9 @@ export default function Dashboard() {
     const [subjects, setSubjects] = useState([]);
     const [assigned, setAssigned] = useState([]);
 
+    const user = useStore(useCallback(state => state.user, []));
+    const signOut = useStore(state => state.signOut);
+
     const handleDrawerOpen = () => {
         setDrawer(true);
     };
@@ -180,7 +182,7 @@ export default function Dashboard() {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const {token} = user;
         axios.get('http://localhost:8080/api/users/info/teachers', {
             headers: {
                 'Authorization': 'Bearer ' + token,
@@ -205,7 +207,7 @@ export default function Dashboard() {
     }, []);
     const handleSubjectCreate = event => {
         event.preventDefault();
-        const token = localStorage.getItem('token');
+        const {token} = user;
         axios.post('http://localhost:8080/api/subjects/add', JSON.stringify({
             name: name.toString()
         }), {
@@ -227,7 +229,7 @@ export default function Dashboard() {
     }
     const handleSubjectAssign = event => {
         event.preventDefault();
-        const token = localStorage.getItem('token');
+        const {token} = user;
         axios.post('http://localhost:8080/api/subjects/assign', JSON.stringify({
             subjectId: subjectId.toString(),
             teacherId: teacherId.toString()
@@ -249,7 +251,7 @@ export default function Dashboard() {
     }
 
     const handleShowAssigned = teacherId => {
-        const token = localStorage.getItem('token');
+        const {token} = user;
         axios.post('http://localhost:8080/api/users/info/teacher-subject', JSON.stringify({
             teacherId: teacherId.toString()
         }), {
@@ -262,7 +264,7 @@ export default function Dashboard() {
                 console.log(response);
                 setAssigned(response.data.payload)
                 setMessage('Assigned Subjects List Fetched!');
-                if(response.data.payload.length == 0) {
+                if(response.data.payload.length === 0) {
                     setMessage('No subjects assigned to the requested teacher');
                 }
                 setOpen(true);
@@ -275,11 +277,11 @@ export default function Dashboard() {
     }
     const handleUserCreate = event => {
         event.preventDefault();
-        const token = localStorage.getItem('token');
+        const {token} = user;
         let data = {
             firstName, lastName, kind, username, password: 'test123'
         }
-        if (kind == 'student') {
+        if (kind === 'student') {
             data = { ...data, address, dob, year };
         }
         axios.post('http://localhost:8080/api/users/create', JSON.stringify(
@@ -334,7 +336,7 @@ export default function Dashboard() {
                     <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
                         Student Dashboard
           </Typography>
-                    <IconButton color="inherit" onClick={() => history.push('/')} >
+                    <IconButton color="inherit" onClick={() => {signOut(); history.push('/')}} >
                         <SettingsPower />
                     </IconButton>
                 </Toolbar>
@@ -353,19 +355,19 @@ export default function Dashboard() {
                 </div>
                 <Divider />
                 <List>
-                    <ListItem button onClick={() => { setSelected(0); setTab('create'); }} selected={selected == 0}>
+                    <ListItem button onClick={() => { setSelected(0); setTab('create'); }} selected={selected === 0}>
                         <ListItemIcon>
                             <HomeIcon />
                         </ListItemIcon>
                         <ListItemText primary="Creation Panel" />
                     </ListItem>
-                    <ListItem button onClick={() => { setSelected(1); setTab('teachers'); }} selected={selected == 1}>
+                    <ListItem button onClick={() => { setSelected(1); setTab('teachers'); }} selected={selected === 1}>
                         <ListItemIcon>
                             <AccountCircleIcon />
                         </ListItemIcon>
                         <ListItemText primary="Available Teachers" />
                     </ListItem>
-                    <ListItem button onClick={() => { setSelected(2); setTab('subjects'); }} selected={selected == 2}>
+                    <ListItem button onClick={() => { setSelected(2); setTab('subjects'); }} selected={selected === 2}>
                         <ListItemIcon>
                             <SubjectIcon />
                         </ListItemIcon>
@@ -376,7 +378,7 @@ export default function Dashboard() {
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>
-                    {tab == 'create' && <Grid container spacing={3}>
+                    {tab === 'create' && <Grid container spacing={3}>
                         <Grid item xs={6}>
                             <Paper className={fixedHeightPaper1}>
                                 <form className={classes.form} noValidate onSubmit={event => handleSubjectCreate(event)}>
@@ -461,7 +463,7 @@ export default function Dashboard() {
                             </Paper>
                         </Grid>
                     </Grid>}
-                    {tab == 'create' && <Grid container spacing={3}>
+                    {tab === 'create' && <Grid container spacing={3}>
                         <Grid item xs={12}>
                             <Paper className={classes.paper}>
                                 <form className={classes.form} noValidate onSubmit={event => handleUserCreate(event)}>
@@ -530,7 +532,7 @@ export default function Dashboard() {
                                             />
                                         </Grid>
                                         {
-                                            kind == 'student' &&
+                                            kind === 'student' &&
                                             <Grid item xs={4}>
                                                 <TextField
                                                     variant="outlined"
@@ -548,7 +550,7 @@ export default function Dashboard() {
                                             </Grid>
                                         }
                                         {
-                                            kind == 'student' &&
+                                            kind === 'student' &&
                                             <Grid item xs={4}>
                                                 <TextField
                                                     variant="outlined"
@@ -566,7 +568,7 @@ export default function Dashboard() {
                                             </Grid>
                                         }
                                         {
-                                            kind == 'student' &&
+                                            kind === 'student' &&
                                             <Grid item xs={4}>
                                                 <TextField
                                                     variant="outlined"
@@ -599,7 +601,7 @@ export default function Dashboard() {
                             </Paper>
                         </Grid>
                     </Grid>}
-                    {tab == 'teachers' && <Grid container spacing={3} justify="center" alignItems="center">
+                    {tab === 'teachers' && <Grid container spacing={3} justify="center" alignItems="center">
                         <Grid item xs={8}>
                             <Paper className={fixedHeightPaper}>
                                 <Title>Teachers</Title>
@@ -635,7 +637,7 @@ export default function Dashboard() {
                             </Paper>
                         </Grid>
                         {
-                            assigned.length != 0 && <Grid item xs={3}>
+                            assigned.length !== 0 && <Grid item xs={3}>
                                 <Paper>
                                     <Grid container justify="center" alignItems="center">
                                         <Grid item>
@@ -652,7 +654,7 @@ export default function Dashboard() {
                                                         return (
                                                             <TableRow key={idx}>
                                                                 <TableCell>{subjectId}</TableCell>
-                                                                <TableCell>{subjects.find(subject => subject.subjectId == subjectId).name}</TableCell>
+                                                                <TableCell>{subjects.find(subject => subject.subjectId === subjectId).name}</TableCell>
                                                             </TableRow>
                                                         );
                                                     })}
@@ -665,7 +667,7 @@ export default function Dashboard() {
                         }
                     </Grid>
                     }
-                    {tab == 'subjects' && <Grid container spacing={3} justify="center">
+                    {tab === 'subjects' && <Grid container spacing={3} justify="center">
                         <Grid item xs={6}>
                             <Paper className={fixedHeightPaper}>
                                 <Title>Subjects</Title>

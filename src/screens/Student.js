@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 import clsx from 'clsx';
@@ -28,6 +28,7 @@ import Remarks from './Remarks';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import {useStore} from '../App';
 
 function Copyright() {
     return (
@@ -132,6 +133,9 @@ export default function Dashboard() {
     const [display, setDisplay] = useState([]);
     const [comments, setComments] = useState([]);
     const [visible, setVisible] = useState(true);
+    const user = useStore(useCallback(state => state.user, []));
+    const signOut = useStore(state => state.signOut);
+
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -141,12 +145,12 @@ export default function Dashboard() {
     const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
     const filter = (mode) => {
-        const newDisplay = reports.filter(report => mode == 'Mixed' || report.title.split(' ')[0] == mode);
+        const newDisplay = reports.filter(report => mode === 'Mixed' || report.title.split(' ')[0] === mode);
         setDisplay(newDisplay);
     }
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const {token} = user;
         axios.get('http://localhost:8080/api/users/info/student', {
             headers: {
                 'Authorization': 'Bearer ' + token,
@@ -192,7 +196,7 @@ export default function Dashboard() {
                 open={visible}
                 autoHideDuration={6000}
                 onClose={() => setVisible(false)}
-                message={"Logged In Successfully as " + localStorage.getItem('username')}
+                message={"Logged In Successfully as " + user.username}
                 action={
                     <React.Fragment>
                         <IconButton size="small" aria-label="close" color="inherit" onClick={() => setVisible(false)}>
@@ -215,7 +219,7 @@ export default function Dashboard() {
                     <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
                         Student Dashboard
           </Typography>
-                    <IconButton color="inherit" onClick={() => history.push('/')} >
+                    <IconButton color="inherit" onClick={() => {signOut();history.push('/')}} >
                         <SettingsPower />
                     </IconButton>
                 </Toolbar>
@@ -266,18 +270,18 @@ export default function Dashboard() {
                     <Grid container spacing={3}>
                         <Grid item xs={12} md={8} lg={9}>
                             <Paper className={fixedHeightPaper}>
-                                {display.length != 0 && <Chart reports={display} />}
+                                {display.length !== 0 && <Chart reports={display} />}
                                 {!display.length && <p className="text-center"> No data for this criteria </p>}
                             </Paper>
                         </Grid>
                         <Grid item xs={12} md={4} lg={3}>
                             <Paper className={fixedHeightPaper}>
-                                <Info studentId={data.studentId} firstName={localStorage.getItem('firstName')} lastName={localStorage.getItem('lastName')} dob={data.dob} year={data.year} address={data.address} />
+                                <Info studentId={data.studentId} dob={data.dob} year={data.year} address={data.address} />
                             </Paper>
                         </Grid>
                         <Grid item xs={12}>
                             <Paper className={classes.paper}>
-                                {comments.length != 0 && display.length != 0 && <Remarks comments={comments} reports={display} />}
+                                {comments.length !== 0 && display.length !== 0 && <Remarks comments={comments} reports={display} />}
                                 {(!display.length || !comments.length) && <p className="text-center"> No data for this criteria</p>}
                             </Paper>
                         </Grid>

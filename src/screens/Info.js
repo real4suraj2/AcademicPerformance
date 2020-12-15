@@ -1,25 +1,14 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Title from './Title';
 import Grid from '@material-ui/core/Grid';
+import {useStore} from '../App';
 
-function preventDefault(event) {
-  event.preventDefault();
-}
-
-const useStyles = makeStyles({
-  infoContext: {
-    flex: 1,
-  },
-});
-
-export default (props) => {
-  const classes = useStyles();
-  console.log(props);
+export default function Info(props) {
+  const {firstName, lastName} = useStore(state => state.user);
   return (
     <React.Fragment>
-      <Title justify="center">{props.firstName + " " + props.lastName}</Title>
+      <Title justify="center">{firstName + " " + lastName}</Title>
       {
         props.studentId &&
         <>

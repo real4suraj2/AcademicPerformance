@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -13,6 +13,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import {useStore} from '../App';
 
 import axios from 'axios';
 
@@ -49,12 +50,22 @@ const Copyright = () => {
     );
 }
 
-export default () => {
+export default function Login() {
     const history = useHistory();
     const classes = useStyles();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [open, setOpen] = useState(false);
+
+    const signIn = useStore(state => state.signIn);
+    const user = useStore(state => state.user);
+    const fetch = useStore(state => state.fetch);
+
+    useEffect(() => {
+        // fetch();
+        console.log(user);
+        if(user != null && user.kind !== null) history.push("/" + user.kind);
+    }, []);
 
     const handleLogin = (event) => {
         event.preventDefault();
@@ -62,28 +73,25 @@ export default () => {
             username, password
         }).then(response => {
             const { kind, token, username, firstName, lastName } = response.data;
-            if (token == null || token == undefined) {
+            if (token == null || token === undefined) {
                 console.log("Login Failed")
                 setOpen(true);
             }
+            signIn({token, kind, firstName, lastName, username});
             localStorage.setItem("token", token);
             localStorage.setItem("kind", kind);
             localStorage.setItem("firstName", firstName);
             localStorage.setItem("lastName", lastName);
             localStorage.setItem("username", username);
-            if (kind == 'student')
-                history.push("/dashboard");
-            if (kind == 'teacher')
+            if (kind === 'student')
+                history.push("/student");
+            if (kind === 'teacher')
                 history.push("/teacher");
-            if (kind == 'admin')
+            if (kind === 'admin')
                 history.push("/admin");
-        }).catch(err => {
+        }).catch(() => {
             console.log("Login Failed")
             setOpen(true);
-            // this.setState({
-            //     visible: true,
-            //     message: 'Check your credentials!'
-            // })
         })
     }
     return (

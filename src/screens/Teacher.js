@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import clsx from 'clsx';
@@ -23,6 +23,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Title from './Title';
+import {useStore} from '../App';
 
 function Copyright() {
     return (
@@ -36,8 +37,6 @@ function Copyright() {
         </Typography>
     );
 }
-
-const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -100,7 +99,6 @@ export default function Dashboard() {
     const history = useHistory();
     const [studentId, setStudentId] = useState('');
     const [subjectId, setSubjectId] = useState('');
-    const [reportId, setReportId] = useState('');
     const [comment, setComment] = useState('');
     const [year, setYear] = useState('');
     const [title1, setTitle1] = useState('');
@@ -111,11 +109,15 @@ export default function Dashboard() {
     const [maximumMarks, setMaximumMarks] = useState('');
     const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
     const [open, setOpen] = useState(true);
-    const [message, setMessage] = useState('Logged In Successfully as ' + localStorage.getItem('username'));
     const [showForm, setShowForm] = useState(true);
+
+    const user = useStore(useCallback(state => state.user, []));
+    const signOut = useStore(state => state.signOut);
+
+    const [message, setMessage] = useState('Logged In Successfully as ' + user.username);
     const handleCreateReport = (event) => {
         event.preventDefault();
-        const token = localStorage.getItem('token');
+        const {token} = user;
         axios.post('http://localhost:8080/api/reports/create', JSON.stringify({
             studentId: studentId.toString(),
             subjectId: subjectId.toString(),
@@ -129,10 +131,8 @@ export default function Dashboard() {
                 'Content-Type': 'application/json',
             }
         }).then(response => {
-            console.log(response);
-            if (response.data.payload != null && response.data.payload != undefined) {
-                setReportId(response.data.payload);
-                if (comment.length == 0) return;
+            if (response.data.payload != null && response.data.payload !== undefined) {
+                if (comment.length === 0) return;
                 axios.post('http://localhost:8080/api/comments/create', JSON.stringify({
                     reportId: response.data.payload.toString(),
                     description: comment.toString()
@@ -142,7 +142,6 @@ export default function Dashboard() {
                         'Content-Type': 'application/json',
                     }
                 }).then(response => {
-                    console.log(response);
                     setMessage('Report Generated Successfully');
                     setOpen(true);
                 })
@@ -162,7 +161,7 @@ export default function Dashboard() {
             });
     }
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const {token} = user;
         axios.get('http://localhost:8080/api/users/info/teacher', {
             headers: {
                 'Authorization': 'Bearer ' + token,
@@ -173,7 +172,6 @@ export default function Dashboard() {
                 setData(response.data.payload)
             })
             .catch(function (error) {
-                console.log(error);
                 setMessage('Error Occurred');
                 setOpen(true);
             })
@@ -195,7 +193,6 @@ export default function Dashboard() {
                         }
                     })
                     .catch(function (error) {
-                        console.log(error);
                         setMessage('Error Occurred');
                         setOpen(true);
                     })
@@ -226,7 +223,7 @@ export default function Dashboard() {
                     <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
                         Teacher Dashboard
           </Typography>
-                    <IconButton color="inherit" onClick={() => history.push('/')} >
+                    <IconButton color="inherit" onClick={() => {signOut();history.push('/')}} >
                         <SettingsPower />
                     </IconButton>
                 </Toolbar>
@@ -387,7 +384,7 @@ export default function Dashboard() {
                         </Grid>
                         <Grid item xs={12} md={4} lg={3}>
                             <Paper className={fixedHeightPaper}>
-                                <Info teacherId={data.teacherId} firstName={localStorage.getItem('firstName')} lastName={localStorage.getItem('lastName')} userId={data.userId} />
+                                <Info teacherId={data.teacherId} userId={data.userId} />
                             </Paper>
                         </Grid>
                     </Grid>
